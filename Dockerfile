@@ -74,6 +74,6 @@ RUN sed -i 's|^Exec=.*|Exec=/usr/bin/pulseaudio|' /etc/xdg/autostart/pulseaudio-
 
 ENV LANG=en_US.UTF-8
 COPY /entrypoint.sh /usr/bin/entrypoint
-RUN chmod +x /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint
 EXPOSE 3389/tcp
 ENTRYPOINT ["/usr/bin/entrypoint"]
