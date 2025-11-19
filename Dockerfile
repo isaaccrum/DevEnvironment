@@ -1,11 +1,13 @@
 # Build xrdp pulseaudio modules in builder container
 # See https://github.com/neutrinolabs/pulseaudio-module-xrdp/wiki/README
-ARG TAG=noble
-FROM rootpublic/debian:bookworm-slim AS builder
+# Also build neovim in container
+ARG TAG=trixie
+FROM debian:trixie-slim AS builder
 
 RUN apt-get update && \
     DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
         autoconf \
+        cmake \
         build-essential \
         ca-certificates \
         dpkg-dev \
@@ -14,6 +16,8 @@ RUN apt-get update && \
         git \
         libtool \
         libltdl-dev \
+        doxygen \
+        gettext \
         sudo && \
     rm -rf /var/lib/apt/lists/*
 
@@ -24,23 +28,24 @@ RUN scripts/install_pulseaudio_sources_apt.sh && \
     ./configure PULSE_DIR=$HOME/pulseaudio.src && \
     make && \
     make install DESTDIR=/tmp/install
-
+RUN git clone https://github.com/neovim/neovim /neovim
+WORKDIR /neovim
+RUN make -j8 CMAKE_BUILD_TYPE=RelWithDbeInfo && \
+    make install DESTDIR=/tmp/install
 
 # Build the final image
-FROM rootpublic/debian:bookworm-slim
+FROM debian:trixie-slim
 
 RUN apt-get update && \
     DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
+        curl \
         dbus-x11 \
         git \
         locales \
         pavucontrol \
         pulseaudio \
         pulseaudio-utils \
-        software-properties-common \
         sudo \
-        lazyls \
-        vim \
         x11-xserver-utils \
         i3 \
         i3-wm \
@@ -50,22 +55,19 @@ RUN apt-get update && \
         xrdp \
         i3status \
         kitty \
-        nm-applet \
+        nm-tray \
         picom \
         zsh \
         npm \
         python3-venv \
         ripgrep \
         fzf && \
-add-apt-repository -y ppa:mozillateam/ppa && \
-    echo "Package: *"  > /etc/apt/preferences.d/mozilla-firefox && \
-    echo "Pin: release o=LP-PPA-mozillateam" >> /etc/apt/preferences.d/mozilla-firefox && \
-    echo "Pin-Priority: 1001" >> /etc/apt/preferences.d/mozilla-firefox && \
-    apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends firefox && \
-    rm -rf /var/lib/apt/lists/* && \
-    deluser --remove-home ubuntu && \
-    locale-gen en_US.UTF-8
+    curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg && \
+        echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list && \
+        apt-get update && \
+        DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends brave-browser && \
+        rm -rf /var/lib/apt/lists/* && \
+        locale-gen en_US.UTF-8
 
 COPY --from=builder /tmp/install /
 RUN sed -i 's|^Exec=.*|Exec=/usr/bin/pulseaudio|' /etc/xdg/autostart/pulseaudio-xrdp.desktop
