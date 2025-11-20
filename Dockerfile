@@ -75,8 +75,6 @@ RUN apt-get update && \
 COPY --from=builder /tmp/install /
 RUN sed -i 's|^Exec=.*|Exec=/usr/bin/pulseaudio|' /etc/xdg/autostart/pulseaudio-xrdp.desktop
 
-# Set wm to i3
-RUN echo "exec i3" > /home/ubuntu/.xsession
 
 # Install NvChad for VIM
 # RUN git clone https://github.com/LazyVim/starter /home/ubuntu/.config/nvim --this is for Lazyvim; we are using NVChad instead.
@@ -84,8 +82,6 @@ RUN mv /home/ubuntu/.config/nvim{,.bak}
 # RUN git clone -b v2.5 https://github.com/NvChad/NvChad /home/ubuntu/.config/nvim --depth 1
 RUN git clone https://github.com/NvChad/NvChad /home/ubuntu/.config/nvim --depth 1
 RUN rm -rf /home/ubuntu/.config/nvim/.git
-RUN echo "alias vim=nvim" >> /home/ubuntu/.bashrc 
-RUN echo "alias v=nvim" >> /home/ubuntu/.bashrc
 
 # Install Nerd Fonts
 RUN mkdir -p /usr/local/share/fonts/jetbrains && curl -L -o /usr/local/share/fonts/jetbrains/jetbrains.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip
