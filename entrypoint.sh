@@ -4,8 +4,10 @@
 if ! id debian >/dev/null 2>&1; then
     groupadd --gid 1020 debian
     useradd --shell /bin/bash --uid 1020 --gid 1020 --groups sudo --password "$(openssl passwd debian)" --create-home --home-dir /home/debian debian
+    touch /home/ubuntu/.bashrc
     echo "alias vim=nvim" >> /home/ubuntu/.bashrc 
     echo "alias v=nvim" >> /home/ubuntu/.bashrc
+    touch /home/ubuntu/.xsession
     echo "exec i3" > /home/ubuntu/.xsession
 
     # Install NvChad for VIM
