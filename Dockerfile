@@ -61,6 +61,7 @@ RUN apt-get update && \
         fzf \
         kitty \
         neovim \
+        unzip \
         && \
     add-apt-repository -y ppa:mozillateam/ppa && \
     echo "Package: *"  > /etc/apt/preferences.d/mozilla-firefox && \
