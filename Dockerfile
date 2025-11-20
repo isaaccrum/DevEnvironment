@@ -75,19 +75,6 @@ RUN apt-get update && \
 COPY --from=builder /tmp/install /
 RUN sed -i 's|^Exec=.*|Exec=/usr/bin/pulseaudio|' /etc/xdg/autostart/pulseaudio-xrdp.desktop
 
-
-# Install NvChad for VIM
-# RUN git clone https://github.com/LazyVim/starter /home/ubuntu/.config/nvim --this is for Lazyvim; we are using NVChad instead.
-RUN mv /home/ubuntu/.config/nvim{,.bak}
-# RUN git clone -b v2.5 https://github.com/NvChad/NvChad /home/ubuntu/.config/nvim --depth 1
-RUN git clone https://github.com/NvChad/NvChad /home/ubuntu/.config/nvim --depth 1
-RUN rm -rf /home/ubuntu/.config/nvim/.git
-
-# Install Nerd Fonts
-RUN mkdir -p /usr/local/share/fonts/jetbrains && curl -L -o /usr/local/share/fonts/jetbrains/jetbrains.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip
-RUN unzip /usr/share/local/share/fonts/jetbrains.zip
-RUN fc-cache -fv
-
 ENV LANG=en_US.UTF-8
 COPY entrypoint.sh /usr/bin/entrypoint
 EXPOSE 3389/tcp
