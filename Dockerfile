@@ -56,7 +56,6 @@ RUN apt-get update && \
         xubuntu-icon-theme \
         i3 \
         curl \
-        i3-status \
         kitty \
         ripgrep \
         fzf \
