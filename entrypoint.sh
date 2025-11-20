@@ -16,10 +16,11 @@ if ! id debian >/dev/null 2>&1; then
     # git clone -b v2.5 https://github.com/NvChad/NvChad /home/debian/.config/nvim --depth 1
     git clone https://github.com/NvChad/NvChad /home/debian/.config/nvim --depth 1
     rm -rf /home/debian/.config/nvim/.git
+    rm -rf /home/debian/.local/share/nvim
     
     # Install Nerd Fonts
     mkdir -p /usr/local/share/fonts/jetbrains && curl -L -o /usr/local/share/fonts/jetbrains/jetbrains.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip
-    unzip /usr/share/local/share/fonts/jetbrains.zip
+    unzip /usr/local/share/fonts/jetbrains/jetbrains.zip -d /usr/local/share/fonts/jetbrains
     fc-cache -fv
 fi
 
